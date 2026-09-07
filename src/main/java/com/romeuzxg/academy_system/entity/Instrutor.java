@@ -22,6 +22,6 @@ public class Instrutor {
     private String especialidade;
 
     @OneToMany(mappedBy = "instrutor")
-    private List<Matricula> matriculas = new ArrayList<>();
+    private List<Turma> turmas = new ArrayList<>();
 
 }

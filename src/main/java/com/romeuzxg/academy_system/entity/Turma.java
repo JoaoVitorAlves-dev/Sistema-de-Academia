@@ -25,5 +25,7 @@ public class Turma {
     @OneToMany(mappedBy = "turma")
     private List<Matricula> matriculas = new ArrayList<>();
 
-    //relacionamento instrutor
+    @ManyToOne
+    @JoinColumn(name = "instrutor_id")
+    private Instrutor instrutor;
 }

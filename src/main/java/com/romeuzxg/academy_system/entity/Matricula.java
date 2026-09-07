@@ -30,8 +30,4 @@ public class Matricula {
     @Column(name = "status", nullable = false)
     private Boolean status;
 
-    @ManyToOne
-    @JoinColumn(name = "instrutor_id")
-    private Instrutor instrutor;
-
 }
