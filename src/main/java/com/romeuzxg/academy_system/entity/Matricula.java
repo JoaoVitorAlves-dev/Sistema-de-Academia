@@ -20,7 +20,7 @@ public class Matricula {
     @JoinColumn(name = "aluno_id")
     private Aluno aluno;
 
-    //relacionamento turma
+    //relacionamento turmas
 
     @Column(name = "data_matricula", nullable = false)
     private LocalDate dataMatricula;
