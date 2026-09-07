@@ -8,7 +8,7 @@ Projeto de estudos desenvolvido com **Spring Boot** para praticar relacionamento
 - Spring Boot
 - Spring Data JPA
 - Hibernate
-- Banco de dados POSTRESQL
+- Banco de dados POSTGRESQL
 - Lombok
 
 ## Modelo de entidades
