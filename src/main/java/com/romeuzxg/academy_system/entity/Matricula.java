@@ -20,7 +20,9 @@ public class Matricula {
     @JoinColumn(name = "aluno_id")
     private Aluno aluno;
 
-    //relacionamento turmas
+    @ManyToOne
+    @JoinColumn(name = "turma_id")
+    private Turma turma;
 
     @Column(name = "data_matricula", nullable = false)
     private LocalDate dataMatricula;
