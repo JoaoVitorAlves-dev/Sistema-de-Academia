@@ -112,17 +112,7 @@ Content-Type: application/json
 
 ## Banco de dados
 
-O projeto utiliza o banco H2 em memória para facilitar os testes durante o desenvolvimento.
-
-## Objetivo de aprendizado
-
-Este projeto foi criado exclusivamente para consolidar conhecimentos em:
-
-- `@Entity`, `@Id` e `@GeneratedValue`;
-- `@ManyToOne` e `@OneToMany`;
-- `mappedBy` e `@JoinColumn`;
-- chaves primárias e chaves estrangeiras;
-- DTOs, mappers, services, repositories e controllers.
+O projeto utiliza o banco POSTGRESQL.
 
 ---
 
