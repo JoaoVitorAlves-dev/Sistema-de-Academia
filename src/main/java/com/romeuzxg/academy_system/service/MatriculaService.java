@@ -36,7 +36,7 @@ public class MatriculaService {
 
     public MatriculaResponse save(MatriculaRequest matriculaRequest) {
         Aluno aluno = alunoRepository.findById(matriculaRequest.alunoId()).orElseThrow(() -> new IdNotFoundException("ID Não existe"));
-        Turma turma = turmaRepository.findById(matriculaRequest.alunoId()).orElseThrow(() -> new IdNotFoundException("ID Não existe"));
+        Turma turma = turmaRepository.findById(matriculaRequest.turmaId()).orElseThrow(() -> new IdNotFoundException("ID Não existe"));
         Matricula save = matriculaRepository.save(MatriculaMapper.toEntity(aluno, turma, matriculaRequest));
         return MatriculaMapper.toDTO(save);
     }
@@ -44,11 +44,9 @@ public class MatriculaService {
     public MatriculaResponse updateById(Long id, MatriculaRequest matriculaRequest) {
         matriculaRepository.findById(id).orElseThrow(() -> new IdNotFoundException("ID Não existe"));
         Aluno aluno = alunoRepository.findById(matriculaRequest.alunoId()).orElseThrow(() -> new IdNotFoundException("ID Não existe"));
-        Turma turma = turmaRepository.findById(matriculaRequest.alunoId()).orElseThrow(() -> new IdNotFoundException("ID Não existe"));
+        Turma turma = turmaRepository.findById(matriculaRequest.turmaId()).orElseThrow(() -> new IdNotFoundException("ID Não existe"));
         Matricula entity = MatriculaMapper.toEntity(aluno, turma, matriculaRequest);
         entity.setId(id);
-        aluno.setId(matriculaRequest.alunoId());
-        turma.setId(matriculaRequest.turmaId());
         Matricula save = matriculaRepository.save(entity);
         return MatriculaMapper.toDTO(save);
     }

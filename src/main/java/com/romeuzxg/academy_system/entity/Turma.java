@@ -21,7 +21,7 @@ public class Turma {
     private String nome;
 
     @Column(name = "horario")
-    private Integer horario;
+    private String horario;
 
     @Column(name = "capacidade")
     private Integer capacidade;
