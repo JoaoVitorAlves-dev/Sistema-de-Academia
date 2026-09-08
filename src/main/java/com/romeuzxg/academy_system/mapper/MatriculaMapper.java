@@ -2,14 +2,18 @@ package com.romeuzxg.academy_system.mapper;
 
 import com.romeuzxg.academy_system.dto.request.MatriculaRequest;
 import com.romeuzxg.academy_system.dto.response.MatriculaResponse;
+import com.romeuzxg.academy_system.entity.Aluno;
 import com.romeuzxg.academy_system.entity.Matricula;
+import com.romeuzxg.academy_system.entity.Turma;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class MatriculaMapper {
 
-    public Matricula toEntity(MatriculaRequest matriculaRequest) {
+    public Matricula toEntity(Aluno aluno, Turma turma, MatriculaRequest matriculaRequest) {
         Matricula matricula = new Matricula();
+        matricula.setAluno(aluno);
+        matricula.setTurma(turma);
         matricula.setDataMatricula(matriculaRequest.dataMatricula());
         matricula.setStatus(matriculaRequest.status());
         return matricula;
