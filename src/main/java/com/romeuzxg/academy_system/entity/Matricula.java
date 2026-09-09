@@ -1,7 +1,9 @@
 package com.romeuzxg.academy_system.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
@@ -10,6 +12,8 @@ import java.time.LocalDate;
 @Table(name = "tb_matricula")
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Matricula {
 
     @Id

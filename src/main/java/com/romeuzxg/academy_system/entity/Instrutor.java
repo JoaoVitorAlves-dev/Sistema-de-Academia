@@ -1,7 +1,9 @@
 package com.romeuzxg.academy_system.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.ArrayList;
@@ -11,6 +13,8 @@ import java.util.List;
 @Table(name = "tb_instrutor")
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Instrutor {
 
     @Id
