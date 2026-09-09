@@ -9,7 +9,7 @@ import lombok.*;
 @NoArgsConstructor
 @ToString
 @Builder
-public class LoginRequestDto {
+public class LoginRequest {
 
     @NotBlank
     private String email;

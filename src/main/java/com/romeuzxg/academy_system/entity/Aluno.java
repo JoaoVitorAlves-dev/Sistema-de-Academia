@@ -36,8 +36,7 @@ public class Aluno implements UserDetails {
     @OneToMany(mappedBy = "aluno")
     private List<Matricula> matriculas = new ArrayList<>();
 
-
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "alunos_roles",
             joinColumns = @JoinColumn(name = "aluno_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))

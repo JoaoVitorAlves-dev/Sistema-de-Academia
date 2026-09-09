@@ -9,7 +9,7 @@ import lombok.*;
 @NoArgsConstructor
 @ToString
 @Builder
-public class RegisterRequestDto {
+public class RegisterRequest {
 
     @NotBlank
     private String nome;
