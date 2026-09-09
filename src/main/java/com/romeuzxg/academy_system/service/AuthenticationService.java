@@ -30,7 +30,7 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final TokenProvider tokenProvider;
-    @Value("${JWT_EXPIRATION:3600000}")
+    @Value("${jwt.expiration}")
     private long expirationTime;
 
     public void register(RegisterRequest registerRequest) throws BadRequestException {

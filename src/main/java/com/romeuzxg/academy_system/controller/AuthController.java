@@ -2,6 +2,7 @@ package com.romeuzxg.academy_system.controller;
 
 import com.romeuzxg.academy_system.dto.request.LoginRequest;
 import com.romeuzxg.academy_system.dto.request.RegisterRequest;
+import com.romeuzxg.academy_system.dto.response.TokenResponse;
 import com.romeuzxg.academy_system.service.AuthenticationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,8 +24,8 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public void login(@RequestBody @Valid LoginRequest loginRequestDto) throws Exception {
-        authenticationService.login(loginRequestDto);
+    public TokenResponse login(@RequestBody @Valid LoginRequest loginRequestDto) throws Exception {
+        return authenticationService.login(loginRequestDto);
     }
 
 }
