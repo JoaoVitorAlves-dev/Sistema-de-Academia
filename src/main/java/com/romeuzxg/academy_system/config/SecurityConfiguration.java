@@ -35,7 +35,7 @@ public class SecurityConfiguration {
                             response.setStatus(HttpStatus.FORBIDDEN.value());
                         }))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("v1/auth/**").permitAll()
+                        .requestMatchers("/v1/auth/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
