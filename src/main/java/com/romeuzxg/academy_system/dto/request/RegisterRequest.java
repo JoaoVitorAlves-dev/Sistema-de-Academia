@@ -1,5 +1,6 @@
 package com.romeuzxg.academy_system.dto.request;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 @Getter
@@ -10,8 +11,13 @@ import lombok.*;
 @Builder
 public class RegisterRequestDto {
 
+    @NotBlank
     private String nome;
+
+    @NotBlank
     private String email;
+
+    @NotBlank
     private String senha;
 
 }
