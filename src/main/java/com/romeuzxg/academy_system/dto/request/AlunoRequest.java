@@ -1,6 +1,9 @@
 package com.romeuzxg.academy_system.dto.request;
 
+import lombok.Builder;
+
 import java.time.LocalDate;
 
-public record AlunoRequest(String nome, String email, LocalDate dataNascimento) {
+@Builder
+public record AlunoRequest(String nome, String email, String senha, LocalDate dataNascimento) {
 }
