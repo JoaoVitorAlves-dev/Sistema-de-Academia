@@ -1,5 +1,7 @@
 package com.romeuzxg.academy_system.config;
 
+import com.romeuzxg.academy_system.exceptions.AccessDeniedHandler;
+import com.romeuzxg.academy_system.exceptions.MyEntryPoint;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,7 +27,9 @@ public class SecurityConfiguration {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
-        return http
+        return http.exceptionHandling(exceptions -> exceptions
+                        .authenticationEntryPoint(new MyEntryPoint())
+                        .accessDeniedHandler(new AccessDeniedHandler()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(ex -> ex

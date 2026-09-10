@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Sistema de Academia — Painel</title>
+<style>
+  :root {
+    --bg: #0f172a; --card: #1e293b; --border: #334155;
+    --text: #e2e8f0; --muted: #94a3b8;
+    --primary: #6366f1; --primary-hover: #4f46e5;
+    --danger: #ef4444; --danger-hover: #dc2626; --success: #22c55e;
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg); color: var(--text); padding: 24px; }
+  h1 { font-size: 1.4rem; margin: 0 0 4px; }
+  h3 { margin: 0 0 4px; font-size: 1rem; }
+  .sub { color: var(--muted); font-size: .85rem; margin-bottom: 20px; }
+  .warn { color: #fbbf24; font-size: .75rem; margin: -2px 0 14px; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+  .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: end; }
+  .field { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 160px; }
+  label { font-size: .75rem; color: var(--muted); }
+  input, select { background: #0f172a; border: 1px solid var(--border); color: var(--text);
+    padding: 8px 10px; border-radius: 8px; font-size: .9rem; }
+  button { background: var(--primary); color: white; border: none; padding: 9px 16px;
+    border-radius: 8px; cursor: pointer; font-size: .85rem; font-weight: 600; }
+  button:hover { background: var(--primary-hover); }
+  button.danger { background: var(--danger); }
+  button.danger:hover { background: var(--danger-hover); }
+  button.ghost { background: transparent; border: 1px solid var(--border); color: var(--text); }
+  .tabs { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
+  .tab { padding: 8px 14px; border-radius: 8px; cursor: pointer; color: var(--muted); font-size: .85rem; border: 1px solid transparent; }
+  .tab.active { background: var(--card); color: var(--text); border-color: var(--border); }
+  table { width: 100%; border-collapse: collapse; margin-top: 14px; font-size: .85rem; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+  th { color: var(--muted); font-weight: 600; }
+  .actions { display: flex; gap: 6px; }
+  .hidden { display: none !important; }
+  #banner { position: fixed; top: 16px; right: 16px; padding: 12px 18px; border-radius: 8px;
+    font-size: .85rem; z-index: 99; max-width: 320px; }
+  #banner.err { background: var(--danger); }
+  #banner.ok { background: var(--success); }
+  .badge { padding: 2px 8px; border-radius: 999px; font-size: .75rem; }
+  .badge.ativo { background: rgba(34,197,94,.2); color: var(--success); }
+  .badge.inativo { background: rgba(239,68,68,.2); color: var(--danger); }
+  .status-line { display:flex; align-items:center; gap:8px; margin-bottom: 4px; font-size:.85rem; color: var(--muted); }
+  .dot { width:8px; height:8px; border-radius:50%; background: var(--danger); }
+  .dot.on { background: var(--success); }
+</style>
+</head>
+<body>
+
+<h1>🏋️ Sistema de Academia</h1>
+<div class="sub">Painel de teste conectado à API Spring Boot</div>
+
+<div id="banner" class="hidden"></div>
+
+<div class="card">
+  <div class="row">
+    <div class="field" style="flex:2">
+      <label>URL base da API</label>
+      <input id="apiBase" value="http://localhost:8080">
+    </div>
+    <button onclick="testConnection()">Testar conexão</button>
+  </div>
+  <div class="status-line" style="margin-top:10px"><span id="connDot" class="dot"></span><span id="connText">não verificado</span></div>
+</div>
+
+<div id="authCard" class="card">
+  <div class="tabs">
+    <div class="tab active" onclick="showAuthTab('login')" id="tabLogin">Login</div>
+    <div class="tab" onclick="showAuthTab('register')" id="tabRegister">Registrar</div>
+  </div>
+  <div id="loginForm">
+    <div class="row">
+      <div class="field"><label>Email</label><input id="loginEmail" type="email"></div>
+      <div class="field"><label>Senha</label><input id="loginSenha" type="password"></div>
+      <button onclick="login()">Entrar</button>
+    </div>
+  </div>
+  <div id="registerForm" class="hidden">
+    <div class="row">
+      <div class="field"><label>Nome</label><input id="regNome"></div>
+      <div class="field"><label>Email</label><input id="regEmail" type="email"></div>
+      <div class="field"><label>Senha</label><input id="regSenha" type="password"></div>
+      <button onclick="register()">Cadastrar</button>
+    </div>
+  </div>
+</div>
+
+<div id="appArea" class="hidden">
+  <div class="card">
+    <div class="row" style="align-items:center;">
+      <div style="flex:1">Logado com token JWT válido.</div>
+      <button class="ghost" onclick="logout()">Sair</button>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" onclick="showEntityTab('alunos')" id="navAlunos">Alunos</div>
+    <div class="tab" onclick="showEntityTab('turmas')" id="navTurmas">Turmas</div>
+    <div class="tab" onclick="showEntityTab('instrutores')" id="navInstrutores">Instrutores</div>
+    <div class="tab" onclick="showEntityTab('matriculas')" id="navMatriculas">Matrículas</div>
+  </div>
+
+  <div id="secAlunos" class="card">
+    <h3 id="alunoFormTitle">Novo aluno</h3>
+    <div class="warn">⚠️ Bug conhecido do backend: este endpoint não define senha/role. Aluno criado/editado aqui não consegue logar — use a aba "Registrar" para criar um login funcional.</div>
+    <div class="row">
+      <div class="field"><label>Nome</label><input id="alunoNome"></div>
+      <div class="field"><label>Email</label><input id="alunoEmail"></div>
+      <div class="field"><label>Data de nascimento</label><input id="alunoData" type="date"></div>
+      <button onclick="saveAluno()">Salvar</button>
+      <button class="ghost hidden" id="alunoCancelBtn" onclick="cancelAlunoEdit()">Cancelar</button>
+    </div>
+    <table>
+      <thead><tr><th>ID</th><th>Nome</th><th>Email</th><th>Nascimento</th><th></th></tr></thead>
+      <tbody id="alunosTbody"></tbody>
+    </table>
+  </div>
+
+  <div id="secTurmas" class="card hidden">
+    <h3 id="turmaFormTitle">Nova turma</h3>
+    <div class="row">
+      <div class="field"><label>Nome</label><input id="turmaNome"></div>
+      <div class="field"><label>Horário</label><input id="turmaHorario" placeholder="18:00"></div>
+      <div class="field"><label>Capacidade</label><input id="turmaCapacidade" type="number"></div>
+      <div class="field"><label>Instrutor</label><select id="turmaInstrutorId"></select></div>
+      <button onclick="saveTurma()">Salvar</button>
+      <button class="ghost hidden" id="turmaCancelBtn" onclick="cancelTurmaEdit()">Cancelar</button>
+    </div>
+    <table>
+      <thead><tr><th>ID</th><th>Nome</th><th>Horário</th><th>Capacidade</th><th>Instrutor</th><th></th></tr></thead>
+      <tbody id="turmasTbody"></tbody>
+    </table>
+  </div>
+
+  <div id="secInstrutores" class="card hidden">
+    <h3 id="instrutorFormTitle">Novo instrutor</h3>
+    <div class="row">
+      <div class="field"><label>Nome</label><input id="instrutorNome"></div>
+      <div class="field"><label>Especialidade</label><input id="instrutorEspecialidade"></div>
+      <button onclick="saveInstrutor()">Salvar</button>
+      <button class="ghost hidden" id="instrutorCancelBtn" onclick="cancelInstrutorEdit()">Cancelar</button>
+    </div>
+    <table>
+      <thead><tr><th>ID</th><th>Nome</th><th>Especialidade</th><th></th></tr></thead>
+      <tbody id="instrutoresTbody"></tbody>
+    </table>
+  </div>
+
+  <div id="secMatriculas" class="card hidden">
+    <h3 id="matriculaFormTitle">Nova matrícula</h3>
+    <div class="row">
+      <div class="field"><label>Aluno</label><select id="matriculaAlunoId"></select></div>
+      <div class="field"><label>Turma</label><select id="matriculaTurmaId"></select></div>
+      <div class="field"><label>Data</label><input id="matriculaData" type="date"></div>
+      <div class="field"><label>Status</label>
+        <select id="matriculaStatus">
+          <option value="true">Ativa</option>
+          <option value="false">Inativa</option>
+        </select>
+      </div>
+      <button onclick="saveMatricula()">Salvar</button>
+      <button class="ghost hidden" id="matriculaCancelBtn" onclick="cancelMatriculaEdit()">Cancelar</button>
+    </div>
+    <table>
+      <thead><tr><th>ID</th><th>Aluno</th><th>Turma</th><th>Data</th><th>Status</th><th></th></tr></thead>
+      <tbody id="matriculasTbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+let token = null;
+let editingAlunoId = null, editingTurmaId = null, editingInstrutorId = null, editingMatriculaId = null;
+let alunosCache = [], turmasCache = [], instrutoresCache = [], matriculasCache = [];
+
+function apiBase() { return document.getElementById('apiBase').value.replace(/\/$/, ''); }
+
+function showBanner(msg, type) {
+  const b = document.getElementById('banner');
+  b.textContent = msg;
+  b.className = type;
+  setTimeout(() => b.classList.add('hidden'), 3500);
+}
+
+async function api(path, options = {}) {
+  const headers = { 'Content-Type': 'application/json', ...(options.headers || {}) };
+  if (token) headers['Authorization'] = 'Bearer ' + token;
+  const res = await fetch(apiBase() + path, { ...options, headers });
+  if (!res.ok) {
+    let msg = 'Erro ' + res.status;
+    try { const body = await res.json(); if (body.message) msg = body.message; } catch (_) {}
+    throw new Error(msg);
+  }
+  if (res.status === 204) return null;
+  const text = await res.text();
+  return text ? JSON.parse(text) : null;
+}
+
+async function testConnection() {
+  const dot = document.getElementById('connDot');
+  const txt = document.getElementById('connText');
+  try {
+    await fetch(apiBase() + '/');
+    dot.classList.add('on');
+    txt.textContent = 'API alcançável em ' + apiBase();
+  } catch (e) {
+    dot.classList.remove('on');
+    txt.textContent = 'Não foi possível conectar (API fora do ar ou CORS não configurado)';
+  }
+}
+
+function showAuthTab(tab) {
+  document.getElementById('tabLogin').classList.toggle('active', tab === 'login');
+  document.getElementById('tabRegister').classList.toggle('active', tab === 'register');
+  document.getElementById('loginForm').classList.toggle('hidden', tab !== 'login');
+  document.getElementById('registerForm').classList.toggle('hidden', tab !== 'register');
+}
+
+async function register() {
+  try {
+    await api('/v1/auth/register', { method: 'POST', body: JSON.stringify({
+      nome: document.getElementById('regNome').value,
+      email: document.getElementById('regEmail').value,
+      senha: document.getElementById('regSenha').value
+    })});
+    showBanner('Cadastro realizado! Agora faça login.', 'ok');
+    showAuthTab('login');
+  } catch (e) { showBanner(e.message, 'err'); }
+}
+
+async function login() {
+  try {
+    const data = await api('/v1/auth/login', { method: 'POST', body: JSON.stringify({
+      email: document.getElementById('loginEmail').value,
+      senha: document.getElementById('loginSenha').value
+    })});
+    token = data.token;
+    document.getElementById('authCard').classList.add('hidden');
+    document.getElementById('appArea').classList.remove('hidden');
+    showBanner('Login realizado!', 'ok');
+    await loadInstrutores();
+    await loadAlunos();
+    await loadTurmas();
+    await loadMatriculas();
+  } catch (e) { showBanner(e.message, 'err'); }
+}
+
+function logout() {
+  token = null;
+  document.getElementById('appArea').classList.add('hidden');
+  document.getElementById('authCard').classList.remove('hidden');
+}
+
+function showEntityTab(name) {
+  ['Alunos','Turmas','Instrutores','Matriculas'].forEach(n => {
+    document.getElementById('nav' + n).classList.toggle('active', n.toLowerCase() === name);
+    document.getElementById('sec' + n).classList.toggle('hidden', n.toLowerCase() !== name);
+  });
+}
+
+// ---- ALUNOS ----
+async function loadAlunos() {
+  alunosCache = await api('/alunos');
+  document.getElementById('alunosTbody').innerHTML = alunosCache.map(a => `
+    <tr><td>${a.id}</td><td>${a.nome}</td><td>${a.email}</td><td>${a.dataNascimento ?? ''}</td>
+      <td class="actions">
+        <button class="ghost" onclick="editAluno(${a.id})">Editar</button>
+        <button class="danger" onclick="deleteAluno(${a.id})">Excluir</button>
+      </td></tr>`).join('');
+  refreshMatriculaSelects();
+}
+function editAluno(id) {
+  const a = alunosCache.find(x => x.id === id);
+  document.getElementById('alunoNome').value = a.nome;
+  document.getElementById('alunoEmail').value = a.email;
+  document.getElementById('alunoData').value = a.dataNascimento ?? '';
+  editingAlunoId = id;
+  document.getElementById('alunoFormTitle').textContent = 'Editando aluno #' + id;
+  document.getElementById('alunoCancelBtn').classList.remove('hidden');
+}
+function cancelAlunoEdit() {
+  editingAlunoId = null;
+  document.getElementById('alunoFormTitle').textContent = 'Novo aluno';
+  document.getElementById('alunoCancelBtn').classList.add('hidden');
+  ['alunoNome','alunoEmail','alunoData'].forEach(id => document.getElementById(id).value = '');
+}
+async function saveAluno() {
+  const body = {
+    nome: document.getElementById('alunoNome').value,
+    email: document.getElementById('alunoEmail').value,
+    dataNascimento: document.getElementById('alunoData').value
+  };
+  try {
+    if (editingAlunoId) await api('/alunos/' + editingAlunoId, { method: 'PUT', body: JSON.stringify(body) });
+    else await api('/alunos', { method: 'POST', body: JSON.stringify(body) });
+    cancelAlunoEdit(); await loadAlunos(); showBanner('Aluno salvo!', 'ok');
+  } catch (e) { showBanner(e.message, 'err'); }
+}
+async function deleteAluno(id) {
+  if (!confirm('Excluir aluno #' + id + '?')) return;
+  try { await api('/alunos/' + id, { method: 'DELETE' }); await loadAlunos(); showBanner('Aluno excluído.', 'ok'); }
+  catch (e) { showBanner(e.message, 'err'); }
+}
+
+// ---- INSTRUTORES ----
+async function loadInstrutores() {
+  instrutoresCache = await api('/instrutores');
+  document.getElementById('instrutoresTbody').innerHTML = instrutoresCache.map(i => `
+    <tr><td>${i.id}</td><td>${i.nome}</td><td>${i.especialidade ?? ''}</td>
+      <td class="actions">
+        <button class="ghost" onclick="editInstrutor(${i.id})">Editar</button>
+        <button class="danger" onclick="deleteInstrutor(${i.id})">Excluir</button>
+      </td></tr>`).join('');
+  document.getElementById('turmaInstrutorId').innerHTML =
+    instrutoresCache.map(i => `<option value="${i.id}">${i.nome}</option>`).join('');
+}
+function editInstrutor(id) {
+  const i = instrutoresCache.find(x => x.id === id);
+  document.getElementById('instrutorNome').value = i.nome;
+  document.getElementById('instrutorEspecialidade').value = i.especialidade ?? '';
+  editingInstrutorId = id;
+  document.getElementById('instrutorFormTitle').textContent = 'Editando instrutor #' + id;
+  document.getElementById('instrutorCancelBtn').classList.remove('hidden');
+}
+function cancelInstrutorEdit() {
+  editingInstrutorId = null;
+  document.getElementById('instrutorFormTitle').textContent = 'Novo instrutor';
+  document.getElementById('instrutorCancelBtn').classList.add('hidden');
+  ['instrutorNome','instrutorEspecialidade'].forEach(id => document.getElementById(id).value = '');
+}
+async function saveInstrutor() {
+  const body = {
+    nome: document.getElementById('instrutorNome').value,
+    especialidade: document.getElementById('instrutorEspecialidade').value
+  };
+  try {
+    if (editingInstrutorId) await api('/instrutores/' + editingInstrutorId, { method: 'PUT', body: JSON.stringify(body) });
+    else await api('/instrutores', { method: 'POST', body: JSON.stringify(body) });
+    cancelInstrutorEdit(); await loadInstrutores(); showBanner('Instrutor salvo!', 'ok');
+  } catch (e) { showBanner(e.message, 'err'); }
+}
+async function deleteInstrutor(id) {
+  if (!confirm('Excluir instrutor #' + id + '?')) return;
+  try { await api('/instrutores/' + id, { method: 'DELETE' }); await loadInstrutores(); showBanner('Instrutor excluído.', 'ok'); }
+  catch (e) { showBanner(e.message, 'err'); }
+}
+
+// ---- TURMAS ----
+async function loadTurmas() {
+  turmasCache = await api('/turmas');
+  document.getElementById('turmasTbody').innerHTML = turmasCache.map(t => {
+    const instrutor = instrutoresCache.find(i => i.id === t.instrutorId);
+    return `<tr><td>${t.id}</td><td>${t.nome}</td><td>${t.horario ?? ''}</td><td>${t.capacidade ?? ''}</td>
+      <td>${instrutor ? instrutor.nome : (t.instrutorId ?? '')}</td>
+      <td class="actions">
+        <button class="ghost" onclick="editTurma(${t.id})">Editar</button>
+        <button class="danger" onclick="deleteTurma(${t.id})">Excluir</button>
+      </td></tr>`;
+  }).join('');
+  refreshMatriculaSelects();
+}
+function editTurma(id) {
+  const t = turmasCache.find(x => x.id === id);
+  document.getElementById('turmaNome').value = t.nome;
+  document.getElementById('turmaHorario').value = t.horario ?? '';
+  document.getElementById('turmaCapacidade').value = t.capacidade ?? '';
+  document.getElementById('turmaInstrutorId').value = t.instrutorId ?? '';
+  editingTurmaId = id;
+  document.getElementById('turmaFormTitle').textContent = 'Editando turma #' + id;
+  document.getElementById('turmaCancelBtn').classList.remove('hidden');
+}
+function cancelTurmaEdit() {
+  editingTurmaId = null;
+  document.getElementById('turmaFormTitle').textContent = 'Nova turma';
+  document.getElementById('turmaCancelBtn').classList.add('hidden');
+  ['turmaNome','turmaHorario','turmaCapacidade'].forEach(id => document.getElementById(id).value = '');
+}
+async function saveTurma() {
+  const body = {
+    nome: document.getElementById('turmaNome').value,
+    horario: document.getElementById('turmaHorario').value,
+    capacidade: Number(document.getElementById('turmaCapacidade').value),
+    instrutorId: Number(document.getElementById('turmaInstrutorId').value)
+  };
+  try {
+    if (editingTurmaId) await api('/turmas/' + editingTurmaId, { method: 'PUT', body: JSON.stringify(body) });
+    else await api('/turmas', { method: 'POST', body: JSON.stringify(body) });
+    cancelTurmaEdit(); await loadTurmas(); showBanner('Turma salva!', 'ok');
+  } catch (e) { showBanner(e.message, 'err'); }
+}
+async function deleteTurma(id) {
+  if (!confirm('Excluir turma #' + id + '?')) return;
+  try { await api('/turmas/' + id, { method: 'DELETE' }); await loadTurmas(); showBanner('Turma excluída.', 'ok'); }
+  catch (e) { showBanner(e.message, 'err'); }
+}
+
+// ---- MATRICULAS ----
+function refreshMatriculaSelects() {
+  const alunoSel = document.getElementById('matriculaAlunoId');
+  const turmaSel = document.getElementById('matriculaTurmaId');
+  if (alunoSel) alunoSel.innerHTML = alunosCache.map(a => `<option value="${a.id}">${a.nome}</option>`).join('');
+  if (turmaSel) turmaSel.innerHTML = turmasCache.map(t => `<option value="${t.id}">${t.nome}</option>`).join('');
+}
+async function loadMatriculas() {
+  matriculasCache = await api('/matriculas');
+  document.getElementById('matriculasTbody').innerHTML = matriculasCache.map(m => {
+    const aluno = alunosCache.find(a => a.id === m.alunoId);
+    const turma = turmasCache.find(t => t.id === m.turmaId);
+    return `<tr><td>${m.id}</td><td>${aluno ? aluno.nome : m.alunoId}</td><td>${turma ? turma.nome : m.turmaId}</td>
+      <td>${m.dataMatricula ?? ''}</td>
+      <td><span class="badge ${m.status ? 'ativo' : 'inativo'}">${m.status ? 'Ativa' : 'Inativa'}</span></td>
+      <td class="actions">
+        <button class="ghost" onclick="editMatricula(${m.id})">Editar</button>
+        <button class="danger" onclick="deleteMatricula(${m.id})">Excluir</button>
+      </td></tr>`;
+  }).join('');
+}
+function editMatricula(id) {
+  const m = matriculasCache.find(x => x.id === id);
+  document.getElementById('matriculaAlunoId').value = m.alunoId;
+  document.getElementById('matriculaTurmaId').value = m.turmaId;
+  document.getElementById('matriculaData').value = m.dataMatricula ?? '';
+  document.getElementById('matriculaStatus').value = String(m.status);
+  editingMatriculaId = id;
+  document.getElementById('matriculaFormTitle').textContent = 'Editando matrícula #' + id;
+  document.getElementById('matriculaCancelBtn').classList.remove('hidden');
+}
+function cancelMatriculaEdit() {
+  editingMatriculaId = null;
+  document.getElementById('matriculaFormTitle').textContent = 'Nova matrícula';
+  document.getElementById('matriculaCancelBtn').classList.add('hidden');
+  document.getElementById('matriculaData').value = '';
+}
+async function saveMatricula() {
+  const body = {
+    alunoId: Number(document.getElementById('matriculaAlunoId').value),
+    turmaId: Number(document.getElementById('matriculaTurmaId').value),
+    dataMatricula: document.getElementById('matriculaData').value,
+    status: document.getElementById('matriculaStatus').value === 'true'
+  };
+  try {
+    if (editingMatriculaId) await api('/matriculas/' + editingMatriculaId, { method: 'PUT', body: JSON.stringify(body) });
+    else await api('/matriculas', { method: 'POST', body: JSON.stringify(body) });
+    cancelMatriculaEdit(); await loadMatriculas(); showBanner('Matrícula salva!', 'ok');
+  } catch (e) { showBanner(e.message, 'err'); }
+}
+async function deleteMatricula(id) {
+  if (!confirm('Excluir matrícula #' + id + '?')) return;
+  try { await api('/matriculas/' + id, { method: 'DELETE' }); await loadMatriculas(); showBanner('Matrícula excluída.', 'ok'); }
+  catch (e) { showBanner(e.message, 'err'); }
+}
+</script>
+</body>
+</html>
