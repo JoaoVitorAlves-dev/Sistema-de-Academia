@@ -2,6 +2,7 @@ package com.romeuzxg.academy_system.service;
 
 import com.romeuzxg.academy_system.entity.Aluno;
 import com.romeuzxg.academy_system.entity.RefreshToken;
+import com.romeuzxg.academy_system.exceptions.TokenExpiratedException;
 import com.romeuzxg.academy_system.repository.RefreshTokenRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -38,7 +39,7 @@ public class RefreshTokenService {
 
         if (refreshToken.getExpiraEm().isBefore(Instant.now())) {
             refreshTokenRepository.delete(refreshToken);
-            throw new TokenExpiratedException();
+            throw new TokenExpiratedException("Token expirado.");
         }
 
         return criar(refreshToken.getAluno());
