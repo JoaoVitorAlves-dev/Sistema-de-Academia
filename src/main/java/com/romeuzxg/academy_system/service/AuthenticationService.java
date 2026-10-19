@@ -34,7 +34,7 @@ public class AuthenticationService {
     private long expirationTime;
 
     public void register(RegisterRequest registerRequest) throws BadRequestException {
-        Aluno aluno = alunoRepository.findByEmail(registerRequest.getEmail()).orElse(null);
+        Aluno aluno = alunoRepository.findByEmail(registerRequest.email()).orElse(null);
 
         if (aluno != null) {
             throw new BadRequestException("Aluno já cadastrado com este email");
@@ -47,17 +47,17 @@ public class AuthenticationService {
 
 
         alunoRepository.save(Aluno.builder()
-                .nome(registerRequest.getNome())
-                .email(registerRequest.getEmail())
+                .nome(registerRequest.nome())
+                .email(registerRequest.email())
                 .roles(Set.of(role))
-                .senha(passwordEncoder.encode(registerRequest.getSenha()))
+                .senha(passwordEncoder.encode(registerRequest.senha()))
                 .build());
 
     }
 
     public TokenResponse login(LoginRequest loginRequest) throws Exception {
         try {
-            Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getSenha()));
+            Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.email(), loginRequest.senha()));
             String token = tokenProvider.gerarToken(authentication);
             return new TokenResponse(token, expirationTime);
         } catch (BadCredentialsException e) {

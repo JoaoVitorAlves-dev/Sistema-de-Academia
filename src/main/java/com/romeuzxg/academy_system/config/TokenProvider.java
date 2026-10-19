@@ -14,14 +14,15 @@ import java.util.Date;
 @Component
 public class TokenProvider {
 
-    @Value("${jwt.expiration}")
+    @Value("${app.jwt.access-expiration-minutes}")
     private long expirationTime;
 
-    @Value("${jwt.secret}")
+    @Value("${app.jwt.secret}")
     private String key;
 
     public String gerarToken(Authentication authentication) {
         UserDetails user = (UserDetails) authentication.getPrincipal();
+        assert user != null;
         return buildToken(user.getUsername());
     }
 
