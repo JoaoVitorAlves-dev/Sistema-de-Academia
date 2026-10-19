@@ -3,6 +3,7 @@ package com.romeuzxg.academy_system.service;
 import com.romeuzxg.academy_system.entity.Aluno;
 import com.romeuzxg.academy_system.entity.RefreshToken;
 import com.romeuzxg.academy_system.exceptions.TokenExpiratedException;
+import com.romeuzxg.academy_system.exceptions.TokenNotFoundException;
 import com.romeuzxg.academy_system.repository.RefreshTokenRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +36,7 @@ public class RefreshTokenService {
 
     @Transactional
     public RefreshToken validarERotacionar(String token) {
-        RefreshToken refreshToken = refreshTokenRepository.findByToken(token).orElseThrow(() -> new TokenNotFoundException());
+        RefreshToken refreshToken = refreshTokenRepository.findByToken(token).orElseThrow(() -> new TokenNotFoundException("Token não encontrado."));
 
         if (refreshToken.getExpiraEm().isBefore(Instant.now())) {
             refreshTokenRepository.delete(refreshToken);
