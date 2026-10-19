@@ -1,23 +1,11 @@
 package com.romeuzxg.academy_system.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
-import lombok.*;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@ToString
-@Builder
-public class RegisterRequest {
+public record RegisterRequest(
+        @NotBlank String nome,
+        @NotBlank String email,
+        @NotBlank String senha
 
-    @NotBlank
-    private String nome;
-
-    @NotBlank
-    private String email;
-
-    @NotBlank
-    private String senha;
-
+) {
 }

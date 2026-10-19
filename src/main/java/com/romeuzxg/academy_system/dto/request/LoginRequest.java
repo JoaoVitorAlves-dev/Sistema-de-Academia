@@ -1,20 +1,10 @@
 package com.romeuzxg.academy_system.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
-import lombok.*;
+import jakarta.validation.constraints.Size;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@ToString
-@Builder
-public class LoginRequest {
-
-    @NotBlank
-    private String email;
-
-    @NotBlank
-    private String senha;
-
+public record LoginRequest(
+        @NotBlank String email,
+        @NotBlank @Size(min = 6) String senha
+) {
 }

@@ -1,4 +1,8 @@
 package com.romeuzxg.academy_system.dto.request;
 
-public record InstrutorRequest(String nome, String especialidade) {
+import jakarta.validation.constraints.NotBlank;
+
+public record InstrutorRequest(
+        @NotBlank String nome,
+        @NotBlank String especialidade) {
 }
