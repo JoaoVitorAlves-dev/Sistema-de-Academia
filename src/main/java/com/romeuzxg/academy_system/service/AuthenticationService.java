@@ -30,6 +30,7 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final TokenProvider tokenProvider;
+
     @Value("${jwt.expiration}")
     private long expirationTime;
 
@@ -52,7 +53,6 @@ public class AuthenticationService {
                 .roles(Set.of(role))
                 .senha(passwordEncoder.encode(registerRequest.senha()))
                 .build());
-
     }
 
     public TokenResponse login(LoginRequest loginRequest) throws Exception {
