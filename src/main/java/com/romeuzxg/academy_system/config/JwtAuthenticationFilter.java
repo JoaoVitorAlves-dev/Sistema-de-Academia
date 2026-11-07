@@ -27,17 +27,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
-        String authorizationHeader = request.getHeader("Authorization");
+        try {
+            String authorizationHeader = request.getHeader("Authorization");
 
-        if (StringUtils.hasText(authorizationHeader) && authorizationHeader.startsWith("Bearer ")) {
-            String token = authorizationHeader.substring(7);
+            if (StringUtils.hasText(authorizationHeader) && authorizationHeader.startsWith("Bearer ")) {
+                String token = authorizationHeader.substring(7);
 
-            if (tokenProvider.isTokenValid(token)) {
-                String username = tokenProvider.getUsername(token);
-                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                if (tokenProvider.isTokenValid(token)) {
+                    String username = tokenProvider.getUsername(token);
+                    UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                    UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                    SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                }
             }
+        } catch (Exception e) {
+            logger.info(e.getMessage());
         }
 
         filterChain.doFilter(request, response);
