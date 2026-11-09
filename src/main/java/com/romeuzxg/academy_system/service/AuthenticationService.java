@@ -3,9 +3,12 @@ package com.romeuzxg.academy_system.service;
 import com.romeuzxg.academy_system.config.TokenProvider;
 import com.romeuzxg.academy_system.dto.request.AlunoRequest;
 import com.romeuzxg.academy_system.dto.request.LoginRequest;
+import com.romeuzxg.academy_system.dto.request.RefreshTokenRequest;
 import com.romeuzxg.academy_system.dto.request.RegisterRequest;
+import com.romeuzxg.academy_system.dto.response.RefreshTokenResponse;
 import com.romeuzxg.academy_system.dto.response.TokenResponse;
 import com.romeuzxg.academy_system.entity.Aluno;
+import com.romeuzxg.academy_system.entity.RefreshToken;
 import com.romeuzxg.academy_system.entity.roles.RoleAluno;
 import com.romeuzxg.academy_system.repository.AlunoRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,9 +31,18 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final TokenProvider tokenProvider;
+    private final RefreshTokenService refreshTokenService;
 
     @Value("${jwt.expiration}")
     private long expirationTime;
+
+    public RefreshTokenResponse refresh(RefreshTokenRequest req, Authentication auth) {
+        RefreshToken refreshToken = refreshTokenService.validarERotacionar(req.accessToken());
+
+        String s = tokenProvider.gerarToken(auth);
+
+        return new RefreshTokenResponse(s, refreshToken.getToken());
+    }
 
     public void register(RegisterRequest registerRequest) throws BadRequestException {
         Aluno aluno = alunoRepository.findByEmail(registerRequest.email()).orElse(null);
