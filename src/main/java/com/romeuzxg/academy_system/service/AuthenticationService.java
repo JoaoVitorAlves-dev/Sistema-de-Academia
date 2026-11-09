@@ -75,4 +75,15 @@ public class AuthenticationService {
         alunoRepository.save(aluno);
     }
 
+    public void deleteById(Long id, Authentication auth) {
+        Aluno aluno = alunoRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        if (!aluno.getEmail().equals(auth.getName())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
+
+        aluno.setAtivo(false);
+        alunoRepository.save(aluno);    }
+
 }
