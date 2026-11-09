@@ -5,10 +5,9 @@ import com.romeuzxg.academy_system.dto.request.LoginRequest;
 import com.romeuzxg.academy_system.dto.request.RegisterRequest;
 import com.romeuzxg.academy_system.dto.response.TokenResponse;
 import com.romeuzxg.academy_system.entity.Aluno;
-import com.romeuzxg.academy_system.entity.Roles;
+import com.romeuzxg.academy_system.entity.roles.RoleAluno;
 import com.romeuzxg.academy_system.enums.RoleTypeEnum;
 import com.romeuzxg.academy_system.repository.AlunoRepository;
-import com.romeuzxg.academy_system.repository.RolesRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,7 +25,6 @@ import java.util.Set;
 public class AuthenticationService {
 
     private final AlunoRepository alunoRepository;
-    private final RolesRepository rolesRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final TokenProvider tokenProvider;
@@ -41,16 +39,10 @@ public class AuthenticationService {
             throw new BadRequestException("Aluno já cadastrado com este email");
         }
 
-        Roles role = rolesRepository.findByNome(RoleTypeEnum.ALUNO.name())
-                .orElseGet(() -> rolesRepository.save(Roles.builder()
-                        .nome(RoleTypeEnum.ALUNO.name())
-                        .build()));
-
-
         alunoRepository.save(Aluno.builder()
                 .nome(registerRequest.nome())
                 .email(registerRequest.email())
-                .roles(Set.of(role))
+                .roles(RoleAluno.ALUNO)
                 .senha(passwordEncoder.encode(registerRequest.senha()))
                 .build());
     }

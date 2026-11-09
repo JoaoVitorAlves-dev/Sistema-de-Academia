@@ -29,8 +29,8 @@ public class AlunoService {
     }
 
     public AlunoResponse save(AlunoRequest alunoRequest) {
-        Aluno save = alunoRepository.save(AlunoMapper.toEntity(alunoRequest));
-        return AlunoMapper.toDTO(save);
+        Aluno entity = AlunoMapper.toEntity(alunoRequest);
+        return AlunoMapper.toDTO(alunoRepository.save(entity));
     }
 
     public AlunoResponse updateById(Long id, AlunoRequest alunoRequest) {

@@ -12,6 +12,7 @@ public class AlunoMapper {
         Aluno aluno = new Aluno();
         aluno.setNome(alunoRequest.nome());
         aluno.setEmail(alunoRequest.email());
+        aluno.setSenha(alunoRequest.senha());
         aluno.setDataNascimento(alunoRequest.dataNascimento());
         return aluno;
     }

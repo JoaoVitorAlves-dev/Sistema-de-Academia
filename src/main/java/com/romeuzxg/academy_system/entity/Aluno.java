@@ -1,13 +1,12 @@
 package com.romeuzxg.academy_system.entity;
 
+import com.romeuzxg.academy_system.entity.roles.RoleAluno;
 import jakarta.persistence.*;
 import lombok.*;
-import org.jspecify.annotations.Nullable;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "tb_aluno")
@@ -16,7 +15,7 @@ import java.util.*;
 @Getter
 @Setter
 @Builder
-public class Aluno implements UserDetails {
+public class Aluno {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,6 +27,7 @@ public class Aluno implements UserDetails {
     @Column(name = "email", length = 40, unique = true, nullable = false)
     private String email;
 
+    @Column(name = "senha", nullable = false)
     private String senha;
 
     @Column(name = "data_nascimento", nullable = false)
@@ -36,44 +36,8 @@ public class Aluno implements UserDetails {
     @OneToMany(mappedBy = "aluno")
     private List<Matricula> matriculas = new ArrayList<>();
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "alunos_roles",
-            joinColumns = @JoinColumn(name = "aluno_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private Set<Roles> roles = new HashSet<>();
+    @Enumerated(EnumType.STRING)
+    @Column(name = "roles", nullable = false)
+    private RoleAluno roles;
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles;
-    }
-
-    @Override
-    public @Nullable String getPassword() {
-        return senha;
-    }
-
-    @Override
-    public String getUsername() {
-        return email;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return UserDetails.super.isAccountNonExpired();
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return UserDetails.super.isAccountNonLocked();
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return UserDetails.super.isCredentialsNonExpired();
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return UserDetails.super.isEnabled();
-    }
 }
