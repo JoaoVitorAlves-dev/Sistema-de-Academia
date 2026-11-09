@@ -27,11 +27,6 @@ public class AlunoController {
         return ResponseEntity.ok(alunoService.findById(id));
     }
 
-    @PostMapping
-    public ResponseEntity<AlunoResponse> save(@RequestBody AlunoRequest alunoRequest) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(alunoService.save(alunoRequest));
-    }
-
     @PutMapping("/{id}")
     public ResponseEntity<AlunoResponse> updateById(@PathVariable Long id, @RequestBody AlunoRequest alunoRequest) {
         return ResponseEntity.ok(alunoService.updateById(id, alunoRequest));

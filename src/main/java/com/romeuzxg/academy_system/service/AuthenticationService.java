@@ -1,24 +1,24 @@
 package com.romeuzxg.academy_system.service;
 
 import com.romeuzxg.academy_system.config.TokenProvider;
+import com.romeuzxg.academy_system.dto.request.AlunoRequest;
 import com.romeuzxg.academy_system.dto.request.LoginRequest;
 import com.romeuzxg.academy_system.dto.request.RegisterRequest;
 import com.romeuzxg.academy_system.dto.response.TokenResponse;
 import com.romeuzxg.academy_system.entity.Aluno;
 import com.romeuzxg.academy_system.entity.roles.RoleAluno;
-import com.romeuzxg.academy_system.enums.RoleTypeEnum;
 import com.romeuzxg.academy_system.repository.AlunoRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.Set;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -59,5 +59,20 @@ public class AuthenticationService {
         }
     }
 
+    public void updateById(Long id, AlunoRequest req, Authentication auth) {
+        Aluno aluno = alunoRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        if (!aluno.getEmail().equals(auth.getName())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
+
+        aluno.setNome(req.nome());
+        aluno.setEmail(req.email());
+        aluno.setSenha(passwordEncoder.encode(req.senha()));
+        aluno.setDataNascimento(req.dataNascimento());
+
+        alunoRepository.save(aluno);
+    }
 
 }

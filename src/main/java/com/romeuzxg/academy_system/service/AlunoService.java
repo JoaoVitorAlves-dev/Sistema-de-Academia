@@ -28,11 +28,6 @@ public class AlunoService {
         return AlunoMapper.toDTO(aluno);
     }
 
-    public AlunoResponse save(AlunoRequest alunoRequest) {
-        Aluno entity = AlunoMapper.toEntity(alunoRequest);
-        return AlunoMapper.toDTO(alunoRepository.save(entity));
-    }
-
     public AlunoResponse updateById(Long id, AlunoRequest alunoRequest) {
         alunoRepository.findById(id).orElseThrow(() -> new IdNotFoundException("ID Não existe"));
         Aluno entity = AlunoMapper.toEntity(alunoRequest);

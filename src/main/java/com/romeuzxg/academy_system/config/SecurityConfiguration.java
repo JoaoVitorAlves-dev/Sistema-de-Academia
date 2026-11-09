@@ -5,6 +5,7 @@ import com.romeuzxg.academy_system.exceptions.MyEntryPoint;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -39,7 +40,23 @@ public class SecurityConfiguration {
                             response.setStatus(HttpStatus.FORBIDDEN.value());
                         }))
                 .authorizeHttpRequests(auth -> auth
+
                         .requestMatchers("/v1/auth/**").permitAll()
+
+                        .requestMatchers(HttpMethod.POST, "/v1/auth/register", "/v1/auth/login").permitAll()
+
+                        .requestMatchers(HttpMethod.GET, "/turmas", "/turmas/{id}", "/instrutores", "/instrutores/{id}").hasAnyRole("ALUNO", "ADMIN")
+
+                        .requestMatchers(HttpMethod.POST, "/turmas", "/instrutores").hasRole("ADMIN")
+
+                        .requestMatchers(HttpMethod.PUT, "/turmas/{id}", "/instrutores/{id}").hasRole("ADMIN")
+
+                        .requestMatchers(HttpMethod.DELETE, "/turmas/{id}", "/instrutores/{id}").hasRole("ADMIN")
+
+                        .requestMatchers("/alunos", "/alunos/**").hasRole("ADMIN")
+
+                        .requestMatchers("/matriculas", "/matriculas/**").hasRole("ADMIN")
+
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)

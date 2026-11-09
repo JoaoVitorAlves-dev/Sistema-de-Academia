@@ -40,4 +40,6 @@ public class Aluno {
     @Column(name = "roles", nullable = false)
     private RoleAluno roles;
 
+    @Column(name = "is_ativo", nullable = false)
+    private boolean isAtivo = true;
 }
