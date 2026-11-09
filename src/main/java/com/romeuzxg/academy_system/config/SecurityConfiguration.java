@@ -41,7 +41,11 @@ public class SecurityConfiguration {
                         }))
                 .authorizeHttpRequests(auth -> auth
 
-                        .requestMatchers("/v1/auth/**").permitAll()
+                        .requestMatchers("/v1/auth/update/{id}", "/v1/auth/register", "/v1/auth/login").permitAll()
+
+                        .requestMatchers(HttpMethod.POST, "/v1/auth/refresh").authenticated()
+
+                        .requestMatchers(HttpMethod.DELETE, "/v1/auth/delete/{id}").authenticated()
 
                         .requestMatchers(HttpMethod.POST, "/v1/auth/register", "/v1/auth/login").permitAll()
 

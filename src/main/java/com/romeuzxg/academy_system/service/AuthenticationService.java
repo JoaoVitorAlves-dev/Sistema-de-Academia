@@ -96,6 +96,7 @@ public class AuthenticationService {
         }
 
         aluno.setAtivo(false);
-        alunoRepository.save(aluno);    }
+        alunoRepository.save(aluno);
+    }
 
 }
